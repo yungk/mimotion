@@ -10,6 +10,10 @@ import random
 import re
 import time
 import os
+import socket
+
+# 避免网络请求无限挂起
+socket.setdefaulttimeout(30)
 
 from util.aes_help import encrypt_data, decrypt_data
 import util.zepp_helper as zeppHelper
@@ -347,6 +351,12 @@ if __name__ == "__main__":
         print("未正确配置账号密码，无法执行")
         exit(1)
     min_step, max_step = get_min_max_by_time()
+    # 固定步数范围（仓库变量 FIXED_STEP_RANGE，如 "8000-8100"），设置后不再按时间线性缩放
+    fixed_range = os.environ.get("FIXED_STEP_RANGE", "").strip()
+    if fixed_range:
+        _parts = fixed_range.split("-")
+        min_step, max_step = int(_parts[0]), int(_parts[-1])
+        print(f"使用固定步数范围：{min_step}~{max_step}")
     use_concurrent = config.get('USE_CONCURRENT')
     if use_concurrent is not None and use_concurrent == 'True':
         use_concurrent = True
