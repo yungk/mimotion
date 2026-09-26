@@ -2,13 +2,13 @@ name: 刷步数
 
 on:
   schedule:
-    - cron: '33 10,12,14 * * *'
+    - cron: '50 2 * * *'
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 15
     steps:
       - name: Checkout codes
         uses: actions/checkout@v5
@@ -28,9 +28,10 @@ jobs:
         env:
             CONFIG: ${{ secrets.CONFIG }}
             AES_KEY: ${{ secrets.AES_KEY }}
+            FIXED_STEP_RANGE: ${{ vars.FIXED_STEP_RANGE }}
         run: |
           pip3 install -r requirements.txt
-          python3 main.py
+          python3 -u main.py
 
       - name: persist tokens
         run: |
