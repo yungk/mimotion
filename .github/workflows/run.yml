@@ -2,7 +2,10 @@ name: 刷步数
 
 on:
   schedule:
-    - cron: '0 4 * * *'
+    # 北京时间 11:23 / 11:48 执行，12:17 兜底（避开整点高峰，防止 GitHub 丢弃定时任务）
+    - cron: '23 3 * * *'
+    - cron: '48 3 * * *'
+    - cron: '17 4 * * *'
   workflow_dispatch:
 
 jobs:
