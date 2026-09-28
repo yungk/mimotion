@@ -6,6 +6,7 @@ on:
     - cron: '23 3 * * *'
     - cron: '48 3 * * *'
     - cron: '17 4 * * *'
+    - cron: '35 6 * * *' # 临时测试
   workflow_dispatch:
 
 jobs:
