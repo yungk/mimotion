@@ -6,13 +6,12 @@ on:
     - cron: '23 3 * * *'
     - cron: '48 3 * * *'
     - cron: '17 4 * * *'
-    - cron: '35 6 * * *' # 临时测试
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Checkout codes
         uses: actions/checkout@v5
@@ -35,7 +34,15 @@ jobs:
             FIXED_STEP_RANGE: ${{ vars.FIXED_STEP_RANGE }}
         run: |
           pip3 install -r requirements.txt
-          python3 -u main.py
+          # 华米接口偶尔连接超时，失败时最多重试 5 次
+          for i in 1 2 3 4 5; do
+            python3 -u main.py | tee /tmp/mimotion.log
+            if grep -q "失败：0" /tmp/mimotion.log; then echo "刷步成功"; exit 0; fi
+            echo "第 $i 次失败，60 秒后重试"
+            sleep 60
+          done
+          echo "多次重试仍失败"
+          exit 1
 
       - name: persist tokens
         run: |
