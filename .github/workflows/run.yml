@@ -32,7 +32,8 @@ jobs:
           pip3 install -r requirements.txt
           # 华米接口偶尔连接超时，失败时最多重试 5 次
           for i in 1 2 3 4 5; do
-            python3 -u main.py | tee /tmp/mimotion.log
+            # 每次尝试最多 4 分钟，超时直接结束进入下一次重试
+            timeout 240 python3 -u main.py | tee /tmp/mimotion.log
             if grep -q "失败：0" /tmp/mimotion.log; then echo "刷步成功"; exit 0; fi
             echo "第 $i 次失败，60 秒后重试"
             sleep 60
