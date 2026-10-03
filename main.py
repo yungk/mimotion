@@ -142,7 +142,11 @@ class MiMotionRunner:
             if self.device_id is None:
                 self.device_id = str(uuid.uuid4())
                 user_token_info["device_id"] = self.device_id
-            ok, msg = zeppHelper.check_app_token(app_token)
+            try:
+                ok, msg = zeppHelper.check_app_token(app_token)
+            except Exception as e:
+                # 校验接口（api-mifit-cn3）偶尔连不上，此时改走重新获取 app_token 的流程
+                ok, msg = False, f"校验app_token异常：{e}"
             if ok:
                 self.log_str += "使用加密保存的app_token\n"
                 return app_token
