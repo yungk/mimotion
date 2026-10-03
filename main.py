@@ -15,6 +15,19 @@ import socket
 # 避免网络请求无限挂起
 socket.setdefaulttimeout(30)
 
+# requests 会显式传 timeout=None 覆盖上面的默认值，这里强制给所有请求加 20 秒超时
+import requests
+_orig_session_request = requests.Session.request
+
+
+def _request_with_timeout(self, method, url, **kwargs):
+    if kwargs.get("timeout") is None:
+        kwargs["timeout"] = 20
+    return _orig_session_request(self, method, url, **kwargs)
+
+
+requests.Session.request = _request_with_timeout
+
 from util.aes_help import encrypt_data, decrypt_data
 import util.zepp_helper as zeppHelper
 import util.push_util as push_util
